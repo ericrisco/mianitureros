@@ -3,25 +3,15 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import Image from 'next/image';
 
-interface PromptData {
-  artStyle: string;
-  subject: string;
-  sceneType: string;
-  lightingType: string;
-  mood: string;
-  additionalDetails?: string;
-  extraDetails?: string;
-}
-
 export default function Home() {
   const [artStyle, setArtStyle] = useState<string>('digital art');
   const [subject, setSubject] = useState<string>('WILLYREX_AVATAR');
   const [sceneType, setSceneType] = useState<string>('an explosive cityscape');
   const [lightingType, setLightingType] = useState<string>('dramatic spotlight');
   const [mood, setMood] = useState<string>('intense and exciting');
-  const [additionalDetails, setAdditionalDetails] = useState<string>('with bright, vivid colors');
-  const [extraDetails, setExtraDetails] = useState<string>('');
-  const [prompt, setPrompt] = useState<string>('');
+  const [additionalDetails] = useState<string>('with bright, vivid colors');
+  const [extraDetails] = useState<string>('');
+  const [, setPrompt] = useState<string>('');
   const [resultImage, setResultImage] = useState<string>('');
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [videoDescription, setVideoDescription] = useState<string>('');
@@ -42,7 +32,6 @@ export default function Home() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Ocultar la imagen antes de generar una nueva
     setResultImage('');
 
     try {
