@@ -16,6 +16,7 @@ export default function Home() {
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [videoDescription, setVideoDescription] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>(''); // Estado para el mensaje de error
 
   useEffect(() => {
     setIsFormValid(
@@ -31,7 +32,7 @@ export default function Home() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
+    setErrorMessage(''); // Limpiar mensaje de error antes de iniciar
     setResultImage('');
 
     try {
@@ -66,6 +67,7 @@ export default function Home() {
       setResultImage(imageData.imageUrl[0]);
     } catch (error) {
       console.error('Error:', error);
+      setErrorMessage((error as Error).message);
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +89,6 @@ export default function Home() {
           <small className="text-gray-600">Describe qué pasa en tu video y qué te gustaría que apareciera en la miniatura.</small>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Protagonista de la miniatura como primer campo */}
           <label className="block">
             <span className="text-gray-700">Protagonista de la miniatura:</span>
             <select
@@ -186,8 +187,14 @@ export default function Home() {
           >
             {isLoading ? 'Generando...' : 'Generar Miniatura'}
           </button>
-          <small className="text-gray-600">A veces falla porque esta en pruebas, simplemente vuelve a generar.</small>
+          <small className="text-gray-600">A veces falla porque está en pruebas, simplemente vuelve a generar.</small>
         </form>
+
+        {errorMessage && ( // Mostrar mensaje de error si existe
+          <div className="mt-6 text-red-500">
+            <p>Error: {errorMessage}</p>
+          </div>
+        )}
 
         {resultImage && (
           <div className="mt-6">
