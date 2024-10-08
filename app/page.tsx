@@ -186,6 +186,7 @@ export default function Home() {
           >
             {isLoading ? 'Generando...' : 'Generar Miniatura'}
           </button>
+          <small className="text-gray-600">A veces falla porque esta en pruebas, simplemente vuelve a generar.</small>
         </form>
 
         {resultImage && (
