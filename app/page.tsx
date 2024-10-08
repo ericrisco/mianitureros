@@ -16,7 +16,7 @@ export default function Home() {
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [videoDescription, setVideoDescription] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>(''); // Estado para el mensaje de error
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   useEffect(() => {
     setIsFormValid(
@@ -32,7 +32,7 @@ export default function Home() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setErrorMessage(''); // Limpiar mensaje de error antes de iniciar
+    setErrorMessage('');
     setResultImage('');
 
     try {
@@ -190,7 +190,7 @@ export default function Home() {
           <small className="text-gray-600">A veces falla porque está en pruebas, simplemente vuelve a generar.</small>
         </form>
 
-        {errorMessage && ( // Mostrar mensaje de error si existe
+        {errorMessage && (
           <div className="mt-6 text-red-500">
             <p>Error: {errorMessage}</p>
           </div>
