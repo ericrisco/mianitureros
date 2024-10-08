@@ -16,6 +16,7 @@ The subject provided should always be the central figure and protagonist of the 
 - The subject's name must be used exactly as provided.
 - Only return the prompt, do not add any additional information or explanations.
 - The face of the subject should be clearly visible.
+- If any attribute is 'ignore', just focus on Video description and Subject.
 
 Your goal is to create a prompt that results in a visually powerful thumbnail where the subject is the undeniable star of the image.`;
 

@@ -4,12 +4,12 @@ import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import Image from 'next/image';
 
 export default function Home() {
-  const [artStyle, setArtStyle] = useState<string>('digital art');
+  const [artStyle, setArtStyle] = useState<string>('ignore');
   const [subject, setSubject] = useState<string>('WILLYREX_AVATAR');
-  const [sceneType, setSceneType] = useState<string>('an explosive cityscape');
-  const [lightingType, setLightingType] = useState<string>('dramatic spotlight');
-  const [mood, setMood] = useState<string>('intense and exciting');
-  const [additionalDetails] = useState<string>('with bright, vivid colors');
+  const [sceneType, setSceneType] = useState<string>('ignore');
+  const [lightingType, setLightingType] = useState<string>('ignore');
+  const [mood, setMood] = useState<string>('ignore');
+  const [additionalDetails] = useState<string>('ignore');
   const [extraDetails] = useState<string>('');
   const [, setPrompt] = useState<string>('');
   const [resultImage, setResultImage] = useState<string>('');
@@ -109,6 +109,7 @@ export default function Home() {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             >
               <option value="">Selecciona un estilo</option>
+              <option value="ignore">Ignorar estilo</option>
               <option value="digital art">Arte Digital</option>
               <option value="comic style">Estilo Cómic</option>
               <option value="3D rendering">Renderizado 3D</option>
@@ -126,6 +127,7 @@ export default function Home() {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             >
               <option value="">Selecciona un tipo de escena</option>
+              <option value="ignore">Ignorar estilo</option>
               <option value="an explosive cityscape">Un Paisaje Urbano Explosivo</option>
               <option value="a vibrant carnival">Un Carnaval Vibrante</option>
               <option value="a magical forest at dusk">Un Bosque Mágico al Atardecer</option>
@@ -149,6 +151,7 @@ export default function Home() {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             >
               <option value="">Selecciona un tipo de iluminación</option>
+              <option value="ignore">Ignorar estilo</option>
               <option value="dramatic spotlight">Foco Dramático</option>
               <option value="neon backlight">Iluminación de Fondo Neón</option>
               <option value="fiery glow">Brillo Ardiente</option>
@@ -165,6 +168,7 @@ export default function Home() {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             >
               <option value="">Selecciona un estado de ánimo</option>
+              <option value="ignore">Ignorar estilo</option>
               <option value="intense and exciting">Intenso y Emocionante</option>
               <option value="mysterious and thrilling">Misterioso y Emocionante</option>
               <option value="lighthearted and fun">Alegre y Divertido</option>
