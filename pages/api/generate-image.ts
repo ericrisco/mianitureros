@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     replicate_model = 'ericrisco-at/marcurgell:d31340ddc9a3b242d7835de9db42b0fabdac8421e1d4187c2b804c0672b06580';
 
   try {
-    // Step 1: Create the prediction
+    // Step 1: Create the prediction (async mode by default)
     const response = await fetch(REPLICATE_API_URL, {
       method: 'POST',
       headers: {
@@ -32,7 +32,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       body: JSON.stringify({
         version: replicate_model,
         input: {
-          model: 'dev',
           prompt: prompt,
           lora_scale: 1,
           num_outputs: 1,
@@ -47,8 +46,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
     });
 
+    // Parse the response from Replicate (should contain predictionId)
     const data = await response.json();
-    return res.status(200).json({ predictionId: data.id });
+
+    // Return the prediction ID immediately
+    if (data.id) {
+      return res.status(200).json({ predictionId: data.id });
+    } else {
+      return res.status(500).json({ message: 'Failed to initiate prediction.' });
+    }
   } catch (error) {
     console.error('Error generating image with Replicate:', error);
     return res.status(500).json({ message: 'Error generating the image' });
