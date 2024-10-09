@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           aspect_ratio: "16:9",
           output_format: "png",
           guidance_scale: 3.5,
-          output_quality: 70,
+          output_quality: 40,
           prompt_strength: 0.8,
           extra_lora_scale: 1,
           num_inference_steps: 28,
