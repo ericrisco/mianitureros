@@ -14,12 +14,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ message: 'Model and prompt are required.' });
   }
 
-  let replicate_model: `${string}/${string}:${string}` = '' as `${string}/${string}:${string}`;
+  let replicate_model = '';
   if (model === 'WILLYREX_AVATAR')
-    replicate_model = 'ericrisco-at/willyrex:cf3f35c9fc7c495596ff94b6a1e0b8ec263b46c9be0610d33088d65a5dbc3471';
+    replicate_model = 'cf3f35c9fc7c495596ff94b6a1e0b8ec263b46c9be0610d33088d65a5dbc3471';
 
   if (model === 'MARCURGELL_AVATAR')
-    replicate_model = 'ericrisco-at/marcurgell:d31340ddc9a3b242d7835de9db42b0fabdac8421e1d4187c2b804c0672b06580';
+    replicate_model = 'd31340ddc9a3b242d7835de9db42b0fabdac8421e1d4187c2b804c0672b06580';
 
   try {
     // Step 1: Create the prediction (async mode by default)
@@ -48,6 +48,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Parse the response from Replicate (should contain predictionId)
     const data = await response.json();
+
+    console.log(data);
 
     // Return the prediction ID immediately
     if (data.id) {

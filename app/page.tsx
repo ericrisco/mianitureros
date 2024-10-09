@@ -9,7 +9,7 @@ export default function Home() {
   const [sceneType, setSceneType] = useState<string>('ignore');
   const [lightingType, setLightingType] = useState<string>('ignore');
   const [mood, setMood] = useState<string>('ignore');
-  const [prompt, setPrompt] = useState<string>('');
+  const [prompt, setPrompt] = useState<string>(''); // Descripción del video
   const [resultImage, setResultImage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -80,6 +80,9 @@ export default function Home() {
       setIsLoading(false);
     }
   };
+
+  // Verificación para habilitar o deshabilitar el botón
+  const isFormValid = prompt.trim() !== ''; // Comprueba si la descripción está vacía
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
@@ -194,9 +197,9 @@ export default function Home() {
           <button
             type="submit"
             className={`w-full py-2 px-4 font-bold rounded-md shadow ${
-              isLoading ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+              isFormValid && !isLoading ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-400 text-gray-200 cursor-not-allowed'
             }`}
-            disabled={isLoading}
+            disabled={!isFormValid || isLoading} // El botón estará inactivo si el formulario no es válido o está cargando
           >
             {isLoading ? `Generando... (${retriesLeft} intentos restantes)` : 'Generar Miniatura'}
           </button>
