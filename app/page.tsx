@@ -17,6 +17,7 @@ export default function Home() {
   const [videoDescription, setVideoDescription] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [retriesLeft, setRetriesLeft] = useState<number>(0);
 
   useEffect(() => {
     setIsFormValid(
@@ -28,6 +29,38 @@ export default function Home() {
       mood !== ''
     );
   }, [videoDescription, artStyle, subject, sceneType, lightingType, mood, additionalDetails, extraDetails]);
+
+  const pollForImage = async (predictionId: string) => {
+    let attempts = 0;
+    const maxAttempts = 30;
+    const delay = 10000; // 10 seconds
+
+    setRetriesLeft(maxAttempts);
+
+    while (attempts < maxAttempts) {
+      const imageResponse = await fetch(`/api/get-image?predictionId=${predictionId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const imageData = await imageResponse.json();
+
+      if (imageResponse.ok && imageData.status === 'succeeded') {
+        setResultImage(imageData.imageUrl[0]);
+        setIsLoading(false);
+        return;
+      }
+
+      attempts += 1;
+      setRetriesLeft(maxAttempts - attempts); // Update retries left in button
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    setErrorMessage('Error: No se pudo generar la imagen después de varios intentos.');
+    setIsLoading(false);
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -64,11 +97,14 @@ export default function Home() {
       }
 
       const imageData = await imageResponse.json();
-      setResultImage(imageData.imageUrl[0]);
+      const predictionId = imageData.predictionId;
+
+      // Call the function to poll for the result
+      await pollForImage(predictionId);
+
     } catch (error) {
       console.error('Error:', error);
       setErrorMessage((error as Error).message);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -89,6 +125,7 @@ export default function Home() {
           <small className="text-gray-600">Describe qué pasa en tu video y qué te gustaría que apareciera en la miniatura.</small>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Protagonista de la miniatura */}
           <label className="block">
             <span className="text-gray-700">Protagonista de la miniatura:</span>
             <select
@@ -102,6 +139,7 @@ export default function Home() {
             </select>
           </label>
 
+          {/* Estilo de arte */}
           <label className="block">
             <span className="text-gray-700">Estilo de Arte:</span>
             <select
@@ -120,6 +158,7 @@ export default function Home() {
             </select>
           </label>
 
+          {/* Tipo de escena */}
           <label className="block">
             <span className="text-gray-700">Tipo de Escena:</span>
             <select
@@ -144,6 +183,7 @@ export default function Home() {
             </select>
           </label>
 
+          {/* Tipo de iluminación */}
           <label className="block">
             <span className="text-gray-700">Tipo de Iluminación:</span>
             <select
@@ -161,6 +201,7 @@ export default function Home() {
             </select>
           </label>
 
+          {/* Estado de ánimo */}
           <label className="block">
             <span className="text-gray-700">Estado de Ánimo:</span>
             <select
@@ -178,6 +219,7 @@ export default function Home() {
             </select>
           </label>
 
+          {/* Botón de envío con texto dinámico */}
           <button
             type="submit"
             className={`w-full py-2 px-4 font-bold rounded-md shadow ${
@@ -185,7 +227,7 @@ export default function Home() {
             }`}
             disabled={!isFormValid || isLoading}
           >
-            {isLoading ? 'Generando...' : 'Generar Miniatura'}
+            {isLoading ? `Generando... (${retriesLeft} intentos restantes)` : 'Generar Miniatura'}
           </button>
           <small className="text-gray-600">A veces falla porque está en pruebas, simplemente vuelve a generar.</small>
         </form>
