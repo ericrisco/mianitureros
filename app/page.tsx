@@ -9,8 +9,6 @@ export default function Home() {
   const [sceneType, setSceneType] = useState<string>('ignore');
   const [lightingType, setLightingType] = useState<string>('ignore');
   const [mood, setMood] = useState<string>('ignore');
-  const [additionalDetails] = useState<string>('ignore');
-  const [extraDetails] = useState<string>('');
   const [prompt, setPrompt] = useState<string>('');
   const [resultImage, setResultImage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
