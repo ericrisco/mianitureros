@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -11,25 +11,13 @@ export default function Home() {
   const [mood, setMood] = useState<string>('ignore');
   const [additionalDetails] = useState<string>('ignore');
   const [extraDetails] = useState<string>('');
-  const [, setPrompt] = useState<string>('');
+  const [prompt, setPrompt] = useState<string>('');
   const [resultImage, setResultImage] = useState<string>('');
-  const [isFormValid, setIsFormValid] = useState<boolean>(false);
-  const [videoDescription, setVideoDescription] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [retriesLeft, setRetriesLeft] = useState<number>(0);
 
-  useEffect(() => {
-    setIsFormValid(
-      videoDescription.trim() !== '' &&
-      artStyle !== '' &&
-      subject !== '' &&
-      sceneType !== '' &&
-      lightingType !== '' &&
-      mood !== ''
-    );
-  }, [videoDescription, artStyle, subject, sceneType, lightingType, mood, additionalDetails, extraDetails]);
-
+  // Polling function to check the status of the prediction
   const pollForImage = async (predictionId: string) => {
     let attempts = 0;
     const maxAttempts = 30;
@@ -62,6 +50,7 @@ export default function Home() {
     setIsLoading(false);
   };
 
+  // Submit function to start the prediction process
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -69,37 +58,22 @@ export default function Home() {
     setResultImage('');
 
     try {
-      const response = await fetch('/api/generate-prompt', {
+      const response = await fetch('/api/generate-image', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ videoDescription, artStyle, subject, sceneType, lightingType, mood, additionalDetails, extraDetails }),
+        body: JSON.stringify({ model: subject, prompt: prompt }),
       });
 
       if (!response.ok) {
-        throw new Error('Error al generar el prompt');
+        throw new Error('Error al iniciar la predicción');
       }
 
       const data = await response.json();
-      setPrompt(data.generatedPrompt);
+      const predictionId = data.predictionId;
 
-      const imageResponse = await fetch('/api/generate-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ model: subject, prompt: data.generatedPrompt }),
-      });
-
-      if (!imageResponse.ok) {
-        throw new Error('Error en la generación de la imagen');
-      }
-
-      const imageData = await imageResponse.json();
-      const predictionId = imageData.predictionId;
-
-      // Call the function to poll for the result
+      // Start polling for the result
       await pollForImage(predictionId);
 
     } catch (error) {
@@ -116,13 +90,12 @@ export default function Home() {
         <div className="mb-6">
           <label className="block mb-2 text-gray-700">Descripción del Video:</label>
           <textarea
-            value={videoDescription}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setVideoDescription(e.target.value)}
+            value={prompt}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
             className="w-full p-2 border rounded-md text-gray-700"
             rows={4}
-            placeholder="Ejemplo: 'Partida de Call Of Duty con amigos en el mapa Nuketown'."
+            placeholder="Escribe aquí el prompt para la imagen"
           />
-          <small className="text-gray-600">Describe qué pasa en tu video y qué te gustaría que apareciera en la miniatura.</small>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Protagonista de la miniatura */}
@@ -223,26 +196,25 @@ export default function Home() {
           <button
             type="submit"
             className={`w-full py-2 px-4 font-bold rounded-md shadow ${
-              isFormValid ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+              isLoading ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-400 text-gray-200 cursor-not-allowed'
             }`}
-            disabled={!isFormValid || isLoading}
+            disabled={isLoading}
           >
             {isLoading ? `Generando... (${retriesLeft} intentos restantes)` : 'Generar Miniatura'}
           </button>
-          <small className="text-gray-600">A veces falla porque está en pruebas, simplemente vuelve a generar.</small>
+
+          {errorMessage && (
+            <div className="mt-6 text-red-500">
+              <p>Error: {errorMessage}</p>
+            </div>
+          )}
+
+          {resultImage && (
+            <div className="mt-6">
+              <Image src={resultImage} alt="Generated Thumbnail" className="mt-4 w-full rounded-lg shadow" width={1000} height={500} />
+            </div>
+          )}
         </form>
-
-        {errorMessage && (
-          <div className="mt-6 text-red-500">
-            <p>Error: {errorMessage}</p>
-          </div>
-        )}
-
-        {resultImage && (
-          <div className="mt-6">
-            <Image src={resultImage} alt="Generated Thumbnail" className="mt-4 w-full rounded-lg shadow" width={1000} height={500} />
-          </div>
-        )}
       </div>
     </div>
   );
